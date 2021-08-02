@@ -2,15 +2,15 @@
 
 from typing import Generator, Union
 
-import os 
-
 from bs4 import BeautifulSoup
 from pathlib import Path
 
 from scrappy_antivirus import ROOT_PATH
+from scrappy_antivirus.scanning.checksums import Checksum
 from scrappy_antivirus.scraping import grab_text_from_url
 
 GITHUB_LINK = "https://github.com/ytisf/theZoo/tree/master/malware/Binaries"
+ZOO_CHECKSUMS = Path(f"{ROOT_PATH}/scrappy_antivirus/virus_data/signatures/scrapped/zoo_checksums.txt")
 
 
 def grab_checksum_links() -> set[str]:
@@ -29,32 +29,33 @@ def grab_checksum_links() -> set[str]:
     return all_links
 
 
-def grab_checksums(checksum_types: list[str]=["sha", "sha256"]) -> Generator[tuple[str, str, str], None, None]:
+def grab_checksums(checksum_types: list[str]=["sha", "sha256"]) -> Generator[Checksum, None, None]:
     checksum_links = grab_checksum_links()
 
     for link in checksum_links:
         for checksum_type in checksum_types:
-            checksum = grab_text_from_url(f"{link[0]}.{checksum_type}").strip()
+            checksum = grab_text_from_url(f"{link[0]}.{checksum_type}")
 
             if checksum:
+                checksum = checksum.strip()
+
                 if checksum_type == "sha" or checksum_type == "sha256":
                     patrition = checksum.partition('  ')
 
-                    yield checksum_type, patrition[0], link[1]
+                    yield Checksum(checksum_type, patrition[0], link[1])
             
-
                 else:
-                    yield checksum
+                    yield Checksum('unknown', checksum, 'Generic.Unknown')
 
 
-def save_checksums(to: Union[str, bytes, Path]=Path(f"{ROOT_PATH}/scrappy_antivirus/virus_data/signatures"), **kwargs):
-    os.makedirs(to, exist_ok=True)
-
-    with open(Path(f"{to}/zoo-checksums.txt"), 'w') as checksum_file:
+def save_checksums(save_to: Union[str, bytes, Path]=ZOO_CHECKSUMS, **kwargs):
+    with open(Path(f"{save_to}"), 'w') as checksum_file:
         for checksum in grab_checksums(**kwargs):
-            line = ';'.join(str(data) for data in checksum)
-            checksum_file.write(f"{line}\n")
+            checksum_file.write(f'{checksum.checksum_type};{checksum.checksum};{checksum.threat_name}\n')
+            print(checksum)
+
 
 if __name__ == "__main__":
-    save_checksums()
+    print(f"Writing checksum file to {ZOO_CHECKSUMS}...")
+    save_checksums(ZOO_CHECKSUMS)
     print("Successfuly saved checksum file!")
