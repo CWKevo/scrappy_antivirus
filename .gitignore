@@ -4,5 +4,6 @@ env/
 __pycache__/
 tests/
 *.pyc
+*.sqlite*
 
 **/signatures/scrapped/
