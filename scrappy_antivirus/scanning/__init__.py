@@ -17,7 +17,8 @@ def get_files_to_scan(start_from: Path=Path('.'), pattern: str='*', match: Optio
         try:
             resolved = path.resolve()
 
-        except PermissionError:
+        except Exception as error:
+            print(f"Error while checking {path}: {error}")
             continue
 
 

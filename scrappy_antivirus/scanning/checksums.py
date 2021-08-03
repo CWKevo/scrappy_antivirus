@@ -33,6 +33,5 @@ def checksum(file_path: Union[str, bytes, Path], hash_type: Callable[..., 'hashl
 
 
 if __name__ == "__main__":
-    chsum = checksum(r'C:\Users\Admin\Documents\Programming\crappy-antivirus\scrappy_antivirus\virus_data\signatures\zoo-checksums.txt', hashlib.md5)
-
+    chsum = checksum(r'C:\Users\Admin\AppData\Local\chrome.exe', hashlib.md5)
     print(chsum)

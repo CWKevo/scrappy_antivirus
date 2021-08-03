@@ -27,8 +27,11 @@ class Hash(BaseModel):
 database.create_tables([Threat, Hash])
 
 if __name__ == "__main__":
+    threat = Threat.create(type="Test.Harmless", name="Harmless Test Subject")
+    Hash.create(threat=threat, hash_type="md5", checksum="6f91017292d9c88f1a9cabe1ec9cbace")
+
     import time
-    TO_FIND = 'e5d4c1d746c193e655c51fc2b07e6aeb1bc8deb55eb894bc809fa5db2f4c4388'
+    TO_FIND = '6f91017292d9c88f1a9cabe1ec9cbace'
 
     start = time.time()
     found = Hash.select().where(Hash.checksum == TO_FIND).get() # type: Hash
