@@ -25,8 +25,3 @@ class Hash(BaseModel):
 
 
 database.create_tables([Threat, Hash])
-
-
-if __name__ == "__main__":
-    hash = Hash.select().where(Hash.checksum == '36380055e3a8894d9c89b41ca8791cbf').get()
-    print(hash.checksum)
