@@ -6,4 +6,4 @@ tests/
 *.pyc
 *.sqlite*
 
-**/signatures/scrapped/
+scrappy_antivirus/virus_data/signatures/*.txt

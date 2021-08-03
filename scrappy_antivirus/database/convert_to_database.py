@@ -1,5 +1,41 @@
-from scrappy_antivirus.scanning.checksum_from_file_scan import get_all_checksums
+from typing import Generator, Union
+
+from pathlib import Path
+from itertools import chain
+
+from scrappy_antivirus import ROOT_PATH
+from scrappy_antivirus.scanning.checksums import Checksum,
 from scrappy_antivirus.database import Hash, Threat
+
+
+def get_zoo_checksums(path: Union[str, bytes, Path]=Path(f"{ROOT_PATH}/scrappy_antivirus/virus_data/signatures/scrapped/zoo_checksums.txt")) -> Generator[Checksum, None, None]:
+    checksum_file = open(path, 'r')
+
+    for raw_checksum in checksum_file:
+        triple = raw_checksum.strip().split(';')
+        checksum = Checksum(triple[0], triple[1], triple[2])
+
+        yield checksum
+
+    checksum_file.close()
+
+
+def get_virusshare_checksums(path: Union[str, bytes, Path]=Path(f"{ROOT_PATH}/scrappy_antivirus/virus_data/signatures/scrapped/virusshare_unpacked_md5_hashes.txt")) -> Generator[Checksum, None, None]:
+    checksum_file = open(path, 'r')
+
+    for raw_checksum in checksum_file:
+        pair = raw_checksum.strip().split('  ')
+        checksum = Checksum("md5", pair[0], 'Unknown')
+
+        yield checksum
+
+    checksum_file.close()
+
+
+def get_all_checksums() -> chain[Checksum]:
+    all_checksums = chain(get_virusshare_checksums(), get_zoo_checksums())
+
+    return all_checksums
 
 
 def add_all_checksums_to_database():

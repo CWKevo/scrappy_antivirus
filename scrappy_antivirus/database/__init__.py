@@ -25,3 +25,17 @@ class Hash(BaseModel):
 
 
 database.create_tables([Threat, Hash])
+
+if __name__ == "__main__":
+    import time
+    TO_FIND = 'e5d4c1d746c193e655c51fc2b07e6aeb1bc8deb55eb894bc809fa5db2f4c4388'
+
+    start = time.time()
+    found = Hash.select().where(Hash.checksum == TO_FIND).get() # type: Hash
+
+    if found:
+        print(found.threat.name, found.checksum)
+    
+    end = time.time()
+    owo = end - start
+    print(f"Took {owo} seconds")
